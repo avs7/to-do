@@ -1,31 +1,99 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import NewTask from './NewTask'
+import { db } from '../config/firebase'
+import { getDocs, collection, deleteDoc, doc } from 'firebase/firestore'
 
 function Tasks() {
   const [tasks, setTasks] = useState([])
 
+  const tasksCollectionRef = collection(db, 'tasks')
+
+  const getTasks = async () => {
+    try {
+      const data = await getDocs(tasksCollectionRef)
+      const filteredData = data.docs.map(doc => ({
+        ...doc.data(),
+        id: doc.id,
+      }))
+      setTasks(filteredData)
+      return filteredData
+    } catch (err) {
+      console.error(err)
+    }
+  }
+
+  useEffect(() => {
+    getTasks()
+  }, [getTasks])
+
+  // TODO: update to sync with db instead of just task state
+  const toggleCompleted = e => {
+    const newTasks = [...tasks]
+    const activeTask = newTasks.find(task => task.id === e.target.id)
+    activeTask.completed = !activeTask.completed
+    setTasks(newTasks)
+  }
+
+  const deleteTask = async id => {
+    const activeTask = doc(db, 'tasks', id)
+    await deleteDoc(activeTask)
+  }
+
   const taskElements = tasks.map(task => (
-    <div className='flex mb-[0.25rem] mt-[1rem] min-h-[1.5rem] pl-[1.5rem] items-center'>
+    <div
+      className='flex mb-[0.25rem] mt-[1rem] min-h-[1.5rem] pl-[1.5rem] items-center'
+      key={task.id}>
       <input
-        className="mt-[0.15rem] mr-[6px] -ml-[1.5rem] h-[1.125rem] w-[1.125rem] appearance-none rounded-[0.25rem] border-[0.125rem] border-solid border-neutral-300 outline-none before:pointer-events-none before:absolute before:h-[0.875rem] before:w-[0.875rem] before:scale-0 before:rounded-full before:bg-transparent before:opacity-0 before:shadow-[0px_0px_0px_13px_transparent] before:content-[''] checked:border-primary checked:bg-primary checked:before:opacity-[0.16] checked:after:absolute checked:after:ml-[0.25rem] checked:after:-mt-px checked:after:block checked:after:h-[0.8125rem] checked:after:w-[0.375rem] checked:after:rotate-45 checked:after:border-[0.125rem] checked:after:border-t-0 checked:after:border-l-0 checked:after:border-solid checked:after:border-white checked:after:bg-transparent checked:after:content-[''] hover:cursor-pointer hover:before:opacity-[0.04] hover:before:shadow-[0px_0px_0px_13px_rgba(0,0,0,0.6)] focus:shadow-none focus:transition-[border-color_0.2s] focus:before:scale-100 focus:before:opacity-[0.12] focus:before:shadow-[0px_0px_0px_13px_rgba(0,0,0,0.6)] focus:before:transition-[box-shadow_0.2s,transform_0.2s] focus:after:absolute focus:after:z-[1] focus:after:block focus:after:h-[0.875rem] focus:after:w-[0.875rem] focus:after:rounded-[0.125rem] focus:after:content-[''] checked:focus:before:scale-100 checked:focus:before:shadow-[0px_0px_0px_13px_#3b71ca] checked:focus:before:transition-[box-shadow_0.2s,transform_0.2s] checked:focus:after:ml-[0.25rem] checked:focus:after:-mt-px checked:focus:after:h-[0.8125rem] checked:focus:after:w-[0.375rem] checked:focus:after:rotate-45 checked:focus:after:rounded-none checked:focus:after:border-[0.125rem] checked:focus:after:border-t-0 checked:focus:after:border-l-0 checked:focus:after:border-solid checked:focus:after:border-white checked:focus:after:bg-transparent dark:border-neutral-600 dark:checked:border-primary dark:checked:bg-primary"
+        className='mt-[0.15rem] mr-[6px] -ml-[1.5rem] h-[1.125rem] w-[1.125rem] rounded-[0.25rem] border-[0.125rem] hover:cursor-pointer '
         type='checkbox'
-        value={task.completed}
-        id='checkbox'
+        checked={task.completed}
+        onChange={e => toggleCompleted(e)}
+        id={task.id}
       />
-      <label
-        className='pl-[0.15rem] hover:cursor-pointer text-lg '
-        htmlFor='checkbox'>
-        {task.title}
-      </label>
+      <div className='flex items-center w-72'>
+        <label
+          className='pl-[0.15rem] text-lg w-72 truncate'
+          htmlFor='checkbox'>
+          {task.title}
+        </label>
+
+        <div className='flex items-center '>
+          <svg
+            xmlns='http://www.w3.org/2000/svg'
+            fill='none'
+            viewBox='0 0 24 24'
+            strokeWidth={1.2}
+            stroke='#94a3b8'
+            className='w-4 h-4 ml-6 mr-2 hover:cursor-pointer'>
+            <path
+              strokeLinecap='round'
+              strokeLinejoin='round'
+              d='M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10'
+            />
+          </svg>
+          <svg
+            xmlns='http://www.w3.org/2000/svg'
+            fill='none'
+            viewBox='0 0 24 24'
+            strokeWidth={1.2}
+            stroke='#94a3b8'
+            onClick={() => deleteTask(task.id)}
+            className='w-4 h-4 ml-2 hover:cursor-pointer'>
+            <path
+              strokeLinecap='round'
+              strokeLinejoin='round'
+              d='M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0'
+            />
+          </svg>
+        </div>
+      </div>
     </div>
   ))
 
-  console.log(tasks)
-
   return (
     <div className='flex justify-center items-center flex-col'>
-      <NewTask setTasks={setTasks} />
-      <div className='mt-1'>{taskElements}</div>
+      <NewTask setTasks={setTasks} tasksCollectionRef={tasksCollectionRef} />
+      <div className='flex flex-col mt-1'>{taskElements}</div>
     </div>
   )
 }
