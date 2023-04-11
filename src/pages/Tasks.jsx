@@ -1,7 +1,13 @@
 import { useState, useEffect } from 'react'
 import NewTask from './NewTask'
 import { db } from '../config/firebase'
-import { getDocs, collection, deleteDoc, doc } from 'firebase/firestore'
+import {
+  getDocs,
+  collection,
+  deleteDoc,
+  doc,
+  updateDoc,
+} from 'firebase/firestore'
 
 function Tasks() {
   const [tasks, setTasks] = useState([])
@@ -16,7 +22,6 @@ function Tasks() {
         id: doc.id,
       }))
       setTasks(filteredData)
-      return filteredData
     } catch (err) {
       console.error(err)
     }
@@ -24,7 +29,17 @@ function Tasks() {
 
   useEffect(() => {
     getTasks()
-  }, [getTasks])
+  }, [])
+
+  const deleteTask = async id => {
+    const activeTask = doc(db, 'tasks', id)
+    await deleteDoc(activeTask)
+    getTasks()
+  }
+
+  const updateTask = async id => {
+    
+  }
 
   // TODO: update to sync with db instead of just task state
   const toggleCompleted = e => {
@@ -32,11 +47,6 @@ function Tasks() {
     const activeTask = newTasks.find(task => task.id === e.target.id)
     activeTask.completed = !activeTask.completed
     setTasks(newTasks)
-  }
-
-  const deleteTask = async id => {
-    const activeTask = doc(db, 'tasks', id)
-    await deleteDoc(activeTask)
   }
 
   const taskElements = tasks.map(task => (
@@ -64,6 +74,7 @@ function Tasks() {
             viewBox='0 0 24 24'
             strokeWidth={1.2}
             stroke='#94a3b8'
+            onClick={() => updateTask(task.id)}
             className='w-4 h-4 ml-6 mr-2 hover:cursor-pointer'>
             <path
               strokeLinecap='round'
@@ -92,7 +103,11 @@ function Tasks() {
 
   return (
     <div className='flex justify-center items-center flex-col'>
-      <NewTask setTasks={setTasks} tasksCollectionRef={tasksCollectionRef} />
+      <NewTask
+        setTasks={setTasks}
+        tasksCollectionRef={tasksCollectionRef}
+        getTasks={getTasks}
+      />
       <div className='flex flex-col mt-1'>{taskElements}</div>
     </div>
   )
