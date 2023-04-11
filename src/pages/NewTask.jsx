@@ -5,6 +5,7 @@ import TaskModal from '../components/TaskModal'
 
 function NewTask({ getTasks, tasksCollectionRef }) {
   const [isOpen, setIsOpen] = useState(false)
+  const toggleModal = () => setIsOpen(!isOpen)
 
   const [newTask, setNewTask] = useState({
     completed: false,
@@ -12,8 +13,6 @@ function NewTask({ getTasks, tasksCollectionRef }) {
     priority: '',
     id: '',
   })
-
-  const toggleModal = () => setIsOpen(!isOpen)
 
   const handleInputChange = event => {
     setNewTask(prev => ({ ...prev, title: event.target.value, id: uuid() }))
@@ -33,6 +32,12 @@ function NewTask({ getTasks, tasksCollectionRef }) {
       })
       toggleModal()
       getTasks()
+      setNewTask({
+        completed: false,
+        title: '',
+        priority: '',
+        id: '',
+      })
     } catch (err) {
       console.error(err)
     }

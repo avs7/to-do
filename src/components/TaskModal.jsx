@@ -61,10 +61,10 @@ function TaskModal({
                         value={taskPriority}
                         onChange={handlePriorityChange}
                         className='pl-1 w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm'>
-                        <option value=''>Select an option</option>
-                        <option value='High'>Normal</option>
-                        <option value='Normal'>High</option>
-                        <option value='Low'>Low</option>
+                        <option value=''>--- Select an option ---</option>
+                        <option value='low'>Low</option>
+                        <option value='normal'>Normal</option>
+                        <option value='high'>High</option>
                       </select>
                     </div>
                   </form>
