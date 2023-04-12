@@ -14,7 +14,9 @@ function Home() {
             <p className='mt-6 mb-8 text-lg leading-8 text-gray-600'>
               Anim aute id magna aliqua ad ad non deserunt sunt. Qui irure qui
               lorem cupidatat commodo. Elit sunt amet fugiat veniam occaecat
-              fugiat aliqua.
+              fugiat aliqua. Anim aute id magna aliqua ad ad non deserunt sunt.
+              Qui irure qui lorem cupidatat commodo. Elit sunt amet fugiat
+              veniam occaecat fugiat aliqua.
             </p>
             <Link
               className='bg-sky-600 p-2 rounded-lg text-slate-200 text-lg'
