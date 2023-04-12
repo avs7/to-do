@@ -14,7 +14,12 @@ function Tasks() {
   const [tasks, setTasks] = useState([])
   const [isOpen, setIsOpen] = useState(false)
   const [editing, setEditing] = useState(false)
-  const [selectedTask, setSelectedTask] = useState(null)
+  const [selectedTask, setSelectedTask] = useState({
+    id: '',
+    priority: '',
+    title: '',
+    completed: true,
+  })
 
   const tasksCollectionRef = collection(db, 'tasks')
 
@@ -48,12 +53,15 @@ function Tasks() {
     setEditing(!editing)
   }
 
-  // TODO: update to sync with db instead of just task state
-  const toggleCompleted = e => {
-    const newTasks = [...tasks]
-    const activeTask = newTasks.find(task => task.id === e.target.id)
-    activeTask.completed = !activeTask.completed
-    setTasks(newTasks)
+  const toggleCompleted = async id => {
+    const currentTask = tasks.find(task => task.id === id)
+
+    const taskDoc = doc(db, 'tasks', currentTask.id)
+    await updateDoc(taskDoc, {
+      completed: !currentTask.completed,
+    })
+
+    getTasks()
   }
 
   const taskElements = tasks.map(task => {
@@ -70,7 +78,7 @@ function Tasks() {
           className='mt-[0.15rem] mr-[6px] -ml-[1.5rem] h-[1.125rem] w-[1.125rem] rounded-[0.25rem] border-[0.125rem] hover:cursor-pointer '
           type='checkbox'
           checked={task.completed}
-          onChange={e => toggleCompleted(e)}
+          onChange={() => toggleCompleted(task.id)}
           id={task.id}
         />
         <div className='flex items-center w-72'>
