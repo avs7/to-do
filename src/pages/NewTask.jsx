@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { v4 as uuid } from 'uuid'
 import { addDoc } from 'firebase/firestore'
+import { db, auth } from '../config/firebase'
 import TaskModal from '../components/TaskModal'
 
 function NewTask({ getTasks, tasksCollectionRef, toggleModal, isOpen }) {
@@ -26,6 +27,7 @@ function NewTask({ getTasks, tasksCollectionRef, toggleModal, isOpen }) {
         id: newTask.id,
         priority: newTask.priority,
         title: newTask.title,
+        // userId: auth?.currentUser?.uid,
       })
       toggleModal()
       getTasks()
