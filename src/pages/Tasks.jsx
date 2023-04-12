@@ -85,7 +85,7 @@ function Tasks() {
         />
         <div className='flex items-center w-72'>
           <label
-            className='pl-[0.15rem] text-lg w-72 truncate'
+            className='pl-[0.15rem] text-xl w-72 truncate'
             style={
               task.completed
                 ? {
