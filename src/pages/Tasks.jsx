@@ -8,11 +8,17 @@ import {
   doc,
   updateDoc,
 } from 'firebase/firestore'
+import EditTask from './EditTask'
 
 function Tasks() {
   const [tasks, setTasks] = useState([])
+  const [isOpen, setIsOpen] = useState(false)
+  const [editing, setEditing] = useState(false)
+  const [selectedTask, setSelectedTask] = useState(null)
 
   const tasksCollectionRef = collection(db, 'tasks')
+
+  const toggleModal = () => setIsOpen(!isOpen)
 
   const getTasks = async () => {
     try {
@@ -37,7 +43,10 @@ function Tasks() {
     getTasks()
   }
 
-  const updateTask = async id => {}
+  const updateTask = id => {
+    setSelectedTask(tasks.find(task => task.id === id))
+    setEditing(!editing)
+  }
 
   // TODO: update to sync with db instead of just task state
   const toggleCompleted = e => {
@@ -68,7 +77,7 @@ function Tasks() {
           <label
             className='pl-[0.15rem] text-lg w-72 truncate'
             htmlFor='checkbox'>
-            {task.title} {task.priority}
+            {task.title}
           </label>
 
           <div className='flex items-center'>
@@ -126,7 +135,17 @@ function Tasks() {
         setTasks={setTasks}
         tasksCollectionRef={tasksCollectionRef}
         getTasks={getTasks}
+        toggleModal={toggleModal}
+        isOpen={isOpen}
       />
+      {editing && (
+        <EditTask
+          setEditing={setEditing}
+          editing={editing}
+          selectedTask={selectedTask}
+          getTasks={getTasks}
+        />
+      )}
       <div className='flex flex-col mt-1'>{taskElements}</div>
     </div>
   )

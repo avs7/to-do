@@ -3,10 +3,7 @@ import { v4 as uuid } from 'uuid'
 import { addDoc } from 'firebase/firestore'
 import TaskModal from '../components/TaskModal'
 
-function NewTask({ getTasks, tasksCollectionRef }) {
-  const [isOpen, setIsOpen] = useState(false)
-  const toggleModal = () => setIsOpen(!isOpen)
-
+function NewTask({ getTasks, tasksCollectionRef, toggleModal, isOpen }) {
   const [newTask, setNewTask] = useState({
     completed: false,
     title: '',
@@ -46,21 +43,23 @@ function NewTask({ getTasks, tasksCollectionRef }) {
   return (
     <>
       <button
-        className='bg-sky-600 p-2 rounded-lg text-slate-200 text-lg'
+        className='bg-sky-600 p-2 m-6 rounded-lg text-slate-200 text-lg'
         onClick={toggleModal}>
         New Task
       </button>
 
-      <TaskModal
-        taskTitle={newTask.title}
-        handleInputChange={handleInputChange}
-        taskPriority={newTask.priority}
-        handlePriorityChange={handlePriorityChange}
-        handleSubmit={handleSubmit}
-        isOpen={isOpen}
-        toggleModal={toggleModal}
-        modalType='New Task'
-      />
+      {isOpen && (
+        <TaskModal
+          taskTitle={newTask.title}
+          handleInputChange={handleInputChange}
+          taskPriority={newTask.priority}
+          handlePriorityChange={handlePriorityChange}
+          handleSubmit={handleSubmit}
+          isOpen={isOpen}
+          toggleModal={toggleModal}
+          modalType='New Task'
+        />
+      )}
     </>
   )
 }
