@@ -1,8 +1,8 @@
 import { useState } from 'react'
 import { v4 as uuid } from 'uuid'
 import { addDoc } from 'firebase/firestore'
-import { db, auth } from '../config/firebase'
 import TaskModal from '../components/TaskModal'
+// import { db, auth } from '../config/firebase'
 
 function NewTask({ getTasks, tasksCollectionRef, toggleModal, isOpen }) {
   const [newTask, setNewTask] = useState({
