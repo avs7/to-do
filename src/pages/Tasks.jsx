@@ -66,9 +66,11 @@ function Tasks() {
 
   const taskElements = tasks.map(task => {
     let priorityColor = 'none'
-    if (task.priority === 'low') priorityColor = '#4d7c0f'
-    if (task.priority === 'normal') priorityColor = '#facc15'
-    if (task.priority === 'high') priorityColor = '#b91c1c'
+    if (!task.completed) {
+      if (task.priority === 'low') priorityColor = '#b91c1c'
+      if (task.priority === 'normal') priorityColor = '#facc15'
+      if (task.priority === 'high') priorityColor = '#4d7c0f'
+    }
 
     return (
       <div
@@ -84,6 +86,14 @@ function Tasks() {
         <div className='flex items-center w-72'>
           <label
             className='pl-[0.15rem] text-lg w-72 truncate'
+            style={
+              task.completed
+                ? {
+                    textDecoration: 'line-through',
+                    color: '#94a3b8',
+                  }
+                : { textDecoration: 'none' }
+            }
             htmlFor='checkbox'>
             {task.title}
           </label>
@@ -108,7 +118,7 @@ function Tasks() {
               fill='none'
               viewBox='0 0 24 24'
               strokeWidth={1.2}
-              stroke='#94a3b8'
+              stroke={task.completed ? '#94a3b8' : '#475569'}
               onClick={() => updateTask(task.id)}
               className='w-4 h-4 mr-2 ml- hover:cursor-pointer'>
               <path
@@ -122,7 +132,7 @@ function Tasks() {
               fill='none'
               viewBox='0 0 24 24'
               strokeWidth={1.2}
-              stroke='#94a3b8'
+              stroke={task.completed ? '#94a3b8' : '#475569'}
               onClick={() => deleteTask(task.id)}
               className='w-4 h-4 mr-2 ml-2 hover:cursor-pointer'>
               <path
